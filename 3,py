@@ -1,0 +1,23 @@
+# Contour Plot
+x = np.linspace(-3, 3, 100)
+y = np.linspace(-3, 3, 100)
+X, Y = np.meshgrid(x, y)
+Z = X**2 + Y**2
+plt.contourf(X, Y, Z)
+plt.colorbar()
+plt.show()
+
+
+import heapq
+edges = {('A', 'B'): 1, ('A', 'C'): 3, ('C', 'D'): 1}
+graph = {'A': ['B', 'C'], 'B': [], 'C': ['D'], 'D': []}
+h = {'A': 4, 'B': 2, 'C': 1, 'D': 0}
+def astar(start, goal):
+    q = [(h[start], 0, start, [])]
+    while q:
+        f, g, node, path = heapq.heappop(q)
+        if node == goal: return path + [node]
+        for n in graph[node]:
+            cost = g + edges.get((node, n), 1)
+            heapq.heappush(q, (cost + h[n], cost, n, path + [node]))
+print("Path:", astar('A', 'D'))

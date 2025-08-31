@@ -1,0 +1,24 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_classification
+import random
+
+# 2D Scatter plot from n-dimensional data
+def visualize_data():
+    X, y = make_classification(n_samples=100, n_features=4, n_informative=2, n_classes=2)
+    plt.scatter(X[:, 0], X[:, 1], c=y, cmap='coolwarm')
+    plt.title("2D Scatter from n-D Data")
+    plt.show() 
+
+# Hill Climbing to maximize f(x) = -x² + 4x
+def hill_climb(x, steps=100, step_size=0.1):
+    for _ in range(steps):
+        new_x = x + random.uniform(-step_size, step_size)
+        if -new_x**2 + 4*new_x > -x**2 + 4*x:
+            x = new_x
+    print(f"Best x: {x:.4f}, f(x): {-x**2 + 4*x:.4f}")
+
+# Main
+if __name__ == "__main__":
+    visualize_data()
+    hill_climb(random.uniform(-5, 5))

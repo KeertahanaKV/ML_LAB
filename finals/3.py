@@ -72,93 +72,57 @@ if __name__ == "__main__":
 
 #Write a program to implement the A* algorithm
 
+import heapq
+
 Graph_nodes = {
     'A': [('B', 6), ('F', 3)],
     'B': [('C', 3), ('D', 2)],
     'C': [('D', 1), ('E', 5)],
     'D': [('C', 1), ('E', 8)],
     'E': [('I', 5), ('J', 5)],
-    'F': [('G', 1),('H', 7)] ,
+    'F': [('G', 1), ('H', 7)],
     'G': [('I', 3)],
     'H': [('I', 2)],
     'I': [('E', 5), ('J', 3)],
-     
 }
 
-def get_neighbors(v):
-    if v in Graph_nodes:
-        return Graph_nodes[v]
-    else:
-        return None
-        
-def h(n):
-        H_dist = {
-            'A': 10,
-            'B': 8,
-            'C': 5,
-            'D': 7,
-            'E': 3,
-            'F': 6,
-            'G': 5,
-            'H': 3,
-            'I': 1,
-            'J': 0             
-        }
-        return H_dist[n]
-        
-def aStarAlgo(start_node, stop_node):
-         
-        open_set = set(start_node) 
-        closed_set = set()
-        g = {} 
-        parents = {}
-        g[start_node] = 0
-        parents[start_node] = start_node
-        
-        while len(open_set) > 0:
-            n = None
+H_dist = {  # heuristic values
+    'A': 10, 'B': 8, 'C': 5, 'D': 7, 'E': 3,
+    'F': 6, 'G': 5, 'H': 3, 'I': 1, 'J': 0
+}
 
-            for v in open_set:
-                if n == None or g[v] + h(v) < g[n] + h(n):
-                    n = v
-     
-            if n == stop_node or Graph_nodes[n] == None:
-                pass
-            else:
-                for (m, weight) in get_neighbors(n):
-                    if m not in open_set and m not in closed_set:
-                        open_set.add(m)
-                        parents[m] = n
-                        g[m] = g[n] + weight
-                         
-                    else:
-                        if g[m] > g[n] + weight:
-                            g[m] = g[n] + weight
-                            parents[m] = n
-                            if m in closed_set:
-                                closed_set.remove(m)
-                                open_set.add(m)
- 
-            if n == None:
-                print('Path does not exist!')
-                return None
-            if n == stop_node:
-                path = []
- 
-                while parents[n] != n:
-                    path.append(n)
-                    n = parents[n]
- 
-                path.append(start_node)
- 
-                path.reverse()
- 
-                print('Path found: {}'.format(path))
-                return path
-            open_set.remove(n)
-            closed_set.add(n)
- 
-        print('Path does not exist!')
-        return None
+def a_star(start, goal):
+    open_heap = []  
+    heapq.heappush(open_heap, (H_dist[start], start))  # (f, node)
+    g = {start: 0}
+    parents = {start: None}
+    closed_set = set()
 
-aStarAlgo('A', 'J') 
+    while open_heap:
+        f, n = heapq.heappop(open_heap)  # get node with smallest f
+
+        if n in closed_set:
+            continue
+        closed_set.add(n)
+
+        if n == goal:  # reconstruct path
+            path = []
+            while n:
+                path.append(n)
+                n = parents[n]
+            return path[::-1]
+
+        for (m, cost) in Graph_nodes.get(n, []):
+            new_g = g[n] + cost
+            if m not in g or new_g < g[m]:
+                g[m] = new_g
+                f = new_g + H_dist[m]
+                heapq.heappush(open_heap, (f, m))
+                parents[m] = n
+
+    return None
+
+# Run
+print("Path found:", a_star('A', 'J'))
+
+

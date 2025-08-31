@@ -91,38 +91,39 @@ H_dist = {  # heuristic values
     'F': 6, 'G': 5, 'H': 3, 'I': 1, 'J': 0
 }
 
+import heapq
+
 def a_star(start, goal):
     open_heap = []  
-    heapq.heappush(open_heap, (H_dist[start], start))  # (f, node)
-    g = {start: 0}
-    parents = {start: None}
+    heapq.heappush(open_heap, (H_dist[start], start))  # (f_score, node)
+
+    g_cost = {start: 0}        # cost from start to node
+    parent = {start: None}     # to reconstruct path
     closed_set = set()
 
     while open_heap:
-        f, n = heapq.heappop(open_heap)  # get node with smallest f
+        f_score, current = heapq.heappop(open_heap)  # best node so far
 
-        if n in closed_set:
+        if current in closed_set:
             continue
-        closed_set.add(n)
+        closed_set.add(current)
 
-        if n == goal:  # reconstruct path
+        if current == goal:  # reached goal → build path
             path = []
-            while n:
-                path.append(n)
-                n = parents[n]
+            while current:
+                path.append(current)
+                current = parent[current]
             return path[::-1]
 
-        for (m, cost) in Graph_nodes.get(n, []):
-            new_g = g[n] + cost
-            if m not in g or new_g < g[m]:
-                g[m] = new_g
-                f = new_g + H_dist[m]
-                heapq.heappush(open_heap, (f, m))
-                parents[m] = n
+        for (neighbor, step_cost) in Graph_nodes.get(current, []):
+            new_cost = g_cost[current] + step_cost  # cost via current
+            if neighbor not in g_cost or new_cost < g_cost[neighbor]:
+                g_cost[neighbor] = new_cost
+                f_score = new_cost + H_dist[neighbor]  # f = g + h
+                heapq.heappush(open_heap, (f_score, neighbor))
+                parent[neighbor] = current
 
     return None
 
 # Run
 print("Path found:", a_star('A', 'J'))
-
-

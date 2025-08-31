@@ -71,30 +71,34 @@ if __name__ == "__main__":
 
 
 #Write a program to implement the A* algorithm
-
 import heapq
 
-Graph_nodes = {
-    'A': [('B', 6), ('F', 3)],
-    'B': [('C', 3), ('D', 2)],
-    'C': [('D', 1), ('E', 5)],
-    'D': [('C', 1), ('E', 8)],
-    'E': [('I', 5), ('J', 5)],
-    'F': [('G', 1), ('H', 7)],
-    'G': [('I', 3)],
-    'H': [('I', 2)],
-    'I': [('E', 5), ('J', 3)],
-}
+# ----------- INPUT FROM USER ------------
+# Number of edges
+n = int(input("Enter number of edges: "))
 
-H_dist = {  # heuristic values
-    'A': 10, 'B': 8, 'C': 5, 'D': 7, 'E': 3,
-    'F': 6, 'G': 5, 'H': 3, 'I': 1, 'J': 0
-}
+Graph_nodes = {}
+for _ in range(n):
+    u, v, w = input("Enter edge (format: from to cost): ").split()
+    w = int(w)
+    if u not in Graph_nodes:
+        Graph_nodes[u] = []
+    Graph_nodes[u].append((v, w))
 
-import heapq
+# Heuristic values
+H_dist = {}
+m = int(input("Enter number of heuristic values: "))
+for _ in range(m):
+    node, h = input("Enter heuristic (format: node value): ").split()
+    H_dist[node] = int(h)
+
+start = input("Enter start node: ")
+goal = input("Enter goal node: ")
+# ----------------------------------------
+
 
 def a_star(start, goal):
-    open_heap = []  
+    open_heap = []
     heapq.heappush(open_heap, (H_dist[start], start))  # (f_score, node)
 
     g_cost = {start: 0}        # cost from start to node
@@ -116,14 +120,33 @@ def a_star(start, goal):
             return path[::-1]
 
         for (neighbor, step_cost) in Graph_nodes.get(current, []):
-            new_cost = g_cost[current] + step_cost  # cost via current
+            new_cost = g_cost[current] + step_cost
             if neighbor not in g_cost or new_cost < g_cost[neighbor]:
                 g_cost[neighbor] = new_cost
-                f_score = new_cost + H_dist[neighbor]  # f = g + h
+                f_score = new_cost + H_dist[neighbor]
                 heapq.heappush(open_heap, (f_score, neighbor))
                 parent[neighbor] = current
 
     return None
 
+
 # Run
-print("Path found:", a_star('A', 'J'))
+print("Path found:", a_star(start, goal))
+
+
+Enter number of edges: 5
+Enter edge (format: from to cost): A B 6
+Enter edge (format: from to cost): A F 3
+Enter edge (format: from to cost): B C 3
+Enter edge (format: from to cost): B D 2
+Enter edge (format: from to cost): C E 5
+
+Enter number of heuristic values: 4
+Enter heuristic (format: node value): A 10
+Enter heuristic (format: node value): B 8
+Enter heuristic (format: node value): C 5
+Enter heuristic (format: node value): E 0
+
+Enter start node: A
+Enter goal node: E
+

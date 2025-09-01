@@ -48,3 +48,22 @@ if __name__ == "__main__":
     }
 
     best_first_search(graph, 'A', 'G')
+
+
+# ------------------- INPUT -------------------
+n = int(input("Enter number of edges: "))
+graph = {}
+
+for _ in range(n):
+    u, v, w = input("Enter edge (from to cost): ").split()
+    w = int(w)
+    if u not in graph:
+        graph[u] = []
+    graph[u].append((v, w))
+
+start = input("Enter start node: ")
+goal = input("Enter goal node: ")
+
+# ------------------- RUN BFS -------------------
+print("\nRunning Best First Search...")
+best_first_search(graph, start, goal)
